@@ -143,7 +143,7 @@ function initialize() {
   var autocompleteItem = new google.maps.places.Autocomplete(inputItem,optionsItem);
 
     google.maps.event.addListener(autocompleteItem, 'place_changed', function () {
-        var place = autocomplete.getPlace();
+        var place = autocompleteItem.getPlace();
         document.getElementById('lat').value = place.geometry.location.lat();;
         document.getElementById('long').value = place.geometry.location.lng();;
     });
