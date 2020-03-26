@@ -97,7 +97,7 @@ function initialize() {
       document.getElementById('lat').value = position.coords.latitude;
       document.getElementById('long').value = position.coords.longitude;
       var geocoder = new google.maps.Geocoder;
-      geocoder.geocode({'latLng': latlng}, function(results, status) {
+      geocoder.geocode({'latLng': geolocation}, function(results, status) {
 	        if (status == google.maps.GeocoderStatus.OK) {
         	    var result = results[0];
                 //look for locality tag and administrative_area_level_1
