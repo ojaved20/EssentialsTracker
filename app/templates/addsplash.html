@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card text-center">
+    <div class="card-header">
+        <h4>Would you like to add another item from</h4>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">{{ business}}</h5>
+        <p class="card-text">{{ address }}</p>
+        <p><a href="{{ url_for('addplus', place_id=place_id, business=business, address=address, lat=lat, long=long) }}"
+              class="btn btn-outline-success col-sm-12 col-md-3">Yes</a></p>
+        <p><a href="{{ url_for('index') }}" class="btn btn-outline-danger col-sm-12 col-md-3">No</a></p>
+    </div>
+</div>
+{% endblock %}

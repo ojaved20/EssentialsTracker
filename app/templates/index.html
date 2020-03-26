@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block jumbo %}
+<div class="jumbotron jumbotron-fluid">
+    <div class="container text-center">
+        <h1 class="display-4">Essentials Tracker</h1>
+        <p class="lead">Help your neighbors track down essentials during periods of shortages.</p>
+        <p><a class="btn btn-outline-primary btn-lg col-sm-12 col-md-3" href="{{ url_for('add') }}" role="button">Add an
+            Update</a></p>
+        <p><a class="btn btn-outline-primary btn-lg col-sm-12 col-md-3" href="{{ url_for('search') }}" role="button">Search
+            for Essentials</a></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Recent updates</h2>
+<ul class="list-group list-group-flush">
+    {% for entry in entries %}
+    <li class="list-group-item">
+        <div class="row">
+            <div class="col-xs-6">
+                {% if entry.quantity=='limited' %}
+                {% set qty = 'Limited Stock' %}
+                <span style="color:tomato"><i class="fas fa-exclamation-circle fa-2x mt-3"></i></span>
+                {% elif entry.quantity=='stocked' %}
+                {% set qty = 'Stocked' %}
+                <span style="color:mediumseagreen"><i class="fas fa-thumbs-up fa-2x mt-3"></i></span>
+                {% else %}
+                {% set qty = 'Out of Stock' %}
+                <span style="color:crimson"><i class="fas fa-ban fa-2x mt-3"></i></span>
+                {% endif %}
+            </div>
+            <div class="col">
+                <h5>{{entry.item}} - {{qty}} <span class="small text-muted">({{entry.timestamp | humanize}})</span></h5>
+              <p><strong>{{entry.business}}</strong> | <a href="https://maps.google.com/?q={{entry.address}}" target="_blank">{{entry.address}}</a></p>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

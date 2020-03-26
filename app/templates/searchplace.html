@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="clearfix">
+    <h4>{{ place.business }}<span class="small"><a href="{{ url_for('search') }}" class="btn btn-primary float-right">New Search</a></span></h4>
+    <p>{{ place.address }}</p>
+    <hr>
+</div>
+{% if not results %}
+<p>Nothing Yet :( </p>
+<p>We rely on users to populate our database. Help your neighbors by adding an update
+    for item the next time you go out to a store.</p>
+{% else %}
+<ul class="list-group list-group-flush mt-5">
+    {% for result in results %}
+    <li class="list-group-item">
+        <div class="row">
+            <div class="col-xs-6">
+                {% if result.quantity=='limited' %}
+                {% set qty = 'Limited Stock' %}
+                <span style="color:tomato"><i class="fas fa-exclamation-circle fa-2x"></i></span>
+                {% elif result.quantity=='stocked' %}
+                {% set qty = 'Stocked' %}
+                <span style="color:mediumseagreen"><i class="fas fa-thumbs-up fa-2x"></i></span>
+                {% else %}
+                {% set qty = 'Out of Stock' %}
+                <span style="color:crimson"><i class="fas fa-ban fa-2x"></i></span>
+                {% endif %}
+            </div>
+            <div class="col">
+                <h5>{{result._id}} - {{qty}} <span class="small text-muted">({{result.latest | humanize}})</span></h5>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}
