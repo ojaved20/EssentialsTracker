@@ -141,8 +141,11 @@ def search():
 
     formItem = SearchItemForm()
     if formItem.validate_on_submit():
+        loc = formItem.zip.data
+        if formItem.zip.data == '':
+            loc = 'Fairfax, VA'
         return redirect(url_for('search_item', item=parse.quote(formItem.item.data), lat=parse.quote(formItem.lat.data),
-                                long=parse.quote(formItem.long.data), radius=parse.quote(formItem.radius.data), zip=parse.quote(formItem.zip.data)))
+                                long=parse.quote(formItem.long.data), radius=parse.quote(formItem.radius.data), zip=parse.quote(loc)))
     return render_template('search.html', formPlace=formPlace, formItem=formItem, place=place, items=items)
 
 
