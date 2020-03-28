@@ -8,7 +8,27 @@ from app import app
 from app.forms import AddForm, SearchItemForm, SearchBusinessForm
 
 mongo = PyMongo(app)
-items = ['hand sanitizer', 'sanitizing wipes', 'toilet paper', 'eggs', 'milk', 'bread', 'children''s tylenol']
+
+items = []
+itemscount = mongo.db.items.count_documents({})
+if itemscount == 0:
+    items = [
+        {'item': 'Hand Sanitizer', 'priority': 1},
+        {'item': 'Sanitizing Wipes', 'priority': 1},
+        {'item': 'Sanitizing Spray', 'priority': 1},
+        {'item': 'Toilet Paper', 'priority': 1},
+        {'item': 'Hand Soap', 'priority': 1},
+        {'item': 'Milk', 'priority': 1},
+        {'item': 'Eggs', 'priority': 1},
+        {'item': 'Yogurt', 'priority': 1},
+        {'item': 'Bread', 'priority': 1},
+        {'item': 'Cereal', 'priority': 1}
+    ]
+    mongo.db.items.insert_many(items)
+
+itemsquery = mongo.db.items.find({}, {'item': 1, '_id': 0}).sort('priority', -1)
+for item in itemsquery:
+    items.append(item['item'])
 
 
 def humanize_ts(timestamp=False):
@@ -82,6 +102,15 @@ def add():
         }
         mycol = mongo.db.entries
         entry_id = mycol.insert_one(entry)
+        itemcol = mongo.db.items
+        existing_item = list(itemcol.find({'item': form.item.data.title()}))
+        if not existing_item:
+            new_item = itemcol.insert_one({'item': form.item.data.title(),
+                                           'priority': 1
+                                           })
+            items.append(form.item.data.title())
+        else:
+            itemcol.update_one({'item': form.item.data.title()}, {'$inc': {'priority': 1}})
         flash('New entry added')
         return redirect(url_for('addsplash', place_id=parse.quote(form.place_id.data),
                                 business=parse.quote(form.name.data), address=parse.quote(form.address.data),

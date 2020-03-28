@@ -14,7 +14,7 @@
             {{ formItem.csrf_token }}
             <div class="form-group">
                 {{formItem.item.label}}
-                {{formItem.item(class="form-control", list="items")}}
+                {{formItem.item(class="form-control", list="items", autocomplete="off")}}
                 <datalist id="items">
                     {% for item in items %}
                     <option>{{item | title}}</option>
