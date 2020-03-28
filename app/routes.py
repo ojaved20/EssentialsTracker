@@ -180,7 +180,7 @@ def search_item(item, lat, long, zip, radius):
     zip = parse.unquote(zip)
     mycol = mongo.db.entries
     pipeline = [
-        {'$match': {'item': item}},
+        {'$match': {'item': item.title()}},
         {'$sort': {'timestamp': -1}},
         {'$group':
              {'_id': '$place_id',

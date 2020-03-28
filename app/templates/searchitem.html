@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="clearfix">
-    <h4>{{ curritem }}<span class="small"><a href="{{ url_for('search') }}" class="btn btn-primary float-right">New Search</a></span></h4>
+    <h4>{{ curritem | title }}<span class="small"><a href="{{ url_for('search') }}" class="btn btn-primary float-right">New Search</a></span></h4>
     <p>Within {{ radius }} miles of {{ zip }}</p>
     <hr>
 </div>

@@ -32,7 +32,7 @@
                 {% endif %}
             </div>
             <div class="col">
-                <h5>{{entry.item}} - {{qty}} <span class="small text-muted">({{entry.timestamp | humanize}})</span></h5>
+                <h5>{{entry.item | title}} - {{qty}} <span class="small text-muted">({{entry.timestamp | humanize}})</span></h5>
               <p><strong>{{entry.business}}</strong> | <a href="https://maps.google.com/?q={{entry.address}}" target="_blank">{{entry.address}}</a></p>
             </div>
         </div>
