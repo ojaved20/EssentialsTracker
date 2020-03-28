@@ -71,7 +71,7 @@ def add():
     }
     if form.validate_on_submit():
         entry = {
-            'item': form.item.data,
+            'item': form.item.data.title(),
             'quantity': form.quantity.data,
             'timestamp': time.time(),
             'place_id': form.place_id.data,
@@ -102,7 +102,7 @@ def addplus(place_id, business, address, lat, long):
     }
     if form.validate_on_submit():
         entry = {
-            'item': form.item.data,
+            'item': form.item.data.title(),
             'quantity': form.quantity.data,
             'timestamp': time.time(),
             'place_id': form.place_id.data,
