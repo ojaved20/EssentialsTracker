@@ -5,8 +5,8 @@
   "background_color": "#2196f3",
   "display": "standalone",
   "orientation": "portrait",
-  "scope": "/",
-  "start_url": "/",
+  "scope": "/ojaved/",
+  "start_url": "/ojaved/",
   "description": "Help your neighbors track down essentials during periods of shortages.",
   "icons": [
     {
