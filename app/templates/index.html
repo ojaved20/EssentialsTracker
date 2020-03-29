@@ -40,3 +40,9 @@
     {% endfor %}
 </ul>
 {% endblock %}
+
+{% block js %}
+<script>
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/static/service-worker.js'); }
+</script>
+{% endblock %}

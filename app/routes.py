@@ -22,7 +22,13 @@ if itemscount == 0:
         {'item': 'Eggs', 'priority': 1},
         {'item': 'Yogurt', 'priority': 1},
         {'item': 'Bread', 'priority': 1},
-        {'item': 'Cereal', 'priority': 1}
+        {'item': 'Cereal', 'priority': 1},
+        {'item': 'Meat - Chicken', 'priority': 1},
+        {'item': 'Meat - Beef', 'priority': 1},
+        {'item': 'Meat - Fish', 'priority': 1},
+        {'item': 'Diapers', 'priority': 1},
+        {'item': 'Baby Formula', 'priority': 1},
+        {'item': 'Baby Food', 'priority': 1}
     ]
     mongo.db.items.insert_many(items)
 
