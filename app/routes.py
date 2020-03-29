@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, jsonify
+from flask import render_template, flash, redirect, url_for, jsonify, send_file
 from flask_pymongo import PyMongo
 from urllib import parse
 from datetime import datetime
@@ -77,6 +77,9 @@ def humanize_ts(timestamp=False):
 
 app.jinja_env.filters['humanize'] = humanize_ts
 
+@app.route('/service-worker.js')
+def service_worker():
+    return send_file('service-worker.js')
 
 @app.route('/')
 @app.route('/index')
