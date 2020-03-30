@@ -10,27 +10,27 @@
   "description": "Help your neighbors track down essentials during shortages due to COVID-19.",
   "icons": [
     {
-      "src": "/images/logo-48_x_48.png",
+      "src": "images/logo-48_x_48.png",
       "sizes": "48x48",
       "type": "image/png"
     },
     {
-      "src": "/images/logo-72_x_72.png",
+      "src": "images/logo-72_x_72.png",
       "sizes": "72x72",
       "type": "image/png"
     },
     {
-      "src": "/images/logo-96_x_96.png",
+      "src": "images/logo-96_x_96.png",
       "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "/images/logo-144_x_144.png",
+      "src": "images/logo-144_x_144.png",
       "sizes": "144x144",
       "type": "image/png"
     },
     {
-      "src": "/images/logo-512_x_512.png",
+      "src": "images/logo-512_x_512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
