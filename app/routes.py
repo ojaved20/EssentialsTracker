@@ -77,6 +77,7 @@ def humanize_ts(timestamp=False):
 
 app.jinja_env.filters['humanize'] = humanize_ts
 
+
 @app.route('/service-worker.js')
 def service_worker():
     return send_file('service-worker.js')
@@ -124,7 +125,7 @@ def add():
         return redirect(url_for('addsplash', place_id=parse.quote(form.place_id.data),
                                 business=parse.quote(form.name.data), address=parse.quote(form.address.data),
                                 lat=parse.quote(form.lat.data), long=parse.quote(form.long.data)))
-    return render_template('add.html', form=form, items=items, place=place)
+    return render_template('add.html', form=form, items=items, place=place, title="Add an Update")
 
 
 @app.route('/add/<place_id>/<business>/<address>/<lat>/<long>',
@@ -155,14 +156,14 @@ def addplus(place_id, business, address, lat, long):
         return redirect(url_for('addsplash', place_id=parse.quote(form.place_id.data),
                                 business=parse.quote(form.name.data), address=parse.quote(form.address.data),
                                 lat=parse.quote(form.lat.data), long=parse.quote(form.long.data)))
-    return render_template('add.html', form=form, items=items, place=place)
+    return render_template('add.html', form=form, items=items, place=place, title="Add an Update")
 
 
 @app.route('/addsplash/<place_id>/<business>/<address>/<lat>/<long>')
 def addsplash(place_id, business, address, lat, long):
     return render_template('addsplash.html', place_id=parse.unquote(place_id),
                            business=parse.unquote(business), address=parse.unquote(address),
-                           lat=parse.unquote(lat), long=parse.unquote(long))
+                           lat=parse.unquote(lat), long=parse.unquote(long), title="Add an Update")
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -183,8 +184,10 @@ def search():
         if formItem.zip.data == '':
             loc = 'Fairfax, VA'
         return redirect(url_for('search_item', item=parse.quote(formItem.item.data), lat=parse.quote(formItem.lat.data),
-                                long=parse.quote(formItem.long.data), radius=parse.quote(formItem.radius.data), zip=parse.quote(loc)))
-    return render_template('search.html', formPlace=formPlace, formItem=formItem, place=place, items=items)
+                                long=parse.quote(formItem.long.data), radius=parse.quote(formItem.radius.data),
+                                zip=parse.quote(loc)))
+    return render_template('search.html', formPlace=formPlace, formItem=formItem, place=place, items=items,
+                           title="Search")
 
 
 @app.route('/search/store/<place_id>/<business>/<address>', methods=['GET', 'POST'])
@@ -209,7 +212,7 @@ def search_place(place_id, business, address):
     ]
     results = list(mycol.aggregate(pipeline))
 
-    return render_template('searchplace.html', results=results, place=place)
+    return render_template('searchplace.html', results=results, place=place, title="Store Search Results")
 
 
 @app.route('/search/item/<item>/<lat>/<long>/<zip>/<radius>')
@@ -245,4 +248,9 @@ def search_item(item, lat, long, zip, radius):
 
     results = output
 
-    return render_template('searchitem.html', results=results, curritem=item, lat=lat, long=long, radius=radius, zip=zip)
+    return render_template('searchitem.html', results=results, curritem=item, lat=lat, long=long, radius=radius,
+                           zip=zip, title="Item Search Results")
+
+@app.route('/about')
+def about():
+    return render_template('about.html', title="About")

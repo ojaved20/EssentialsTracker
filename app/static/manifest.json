@@ -1,13 +1,13 @@
 {
-  "name": "Shelf Tracker",
-  "short_name": "Shelf Tracker",
-  "theme_color": "#2196f3",
-  "background_color": "#2196f3",
+  "name": "COPEVID-19 Supply Tracker",
+  "short_name": "Supply Tracker",
+  "theme_color": "#6BBA70",
+  "background_color": "#e9ecef",
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
   "start_url": "/",
-  "description": "Help your neighbors track down essentials during periods of shortages.",
+  "description": "Help your neighbors track down essentials during shortages due to COVID-19.",
   "icons": [
     {
       "src": "https://via.placeholder.com/48",

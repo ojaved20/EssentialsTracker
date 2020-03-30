@@ -1,19 +1,21 @@
 {% extends "base.html" %}
 
 {% block jumbo %}
-<div class="jumbotron jumbotron-fluid">
+<div class="jumbotron jumbotron-fluid bg-light">
     <div class="container text-center">
-        <h1 class="display-4">Essentials Tracker</h1>
+        <h1 class="display-4 font-weight-bolder"><span style="color:#6BBA70">COPE</span>VID-19</h1>
+        <h2>Supply Tracker</h2>
         <p class="lead">Help your neighbors track down essentials during periods of shortages.</p>
         <p><a class="btn btn-outline-primary btn-lg col-sm-12 col-md-3" href="{{ url_for('add') }}" role="button">Add an
             Update</a></p>
         <p><a class="btn btn-outline-primary btn-lg col-sm-12 col-md-3" href="{{ url_for('search') }}" role="button">Search
-            for Essentials</a></p>
+            for an Item</a></p>
     </div>
 </div>
 {% endblock %}
 
 {% block content %}
+{% if entries %}
 <h2 class="text-center">Recent updates</h2>
 <ul class="list-group list-group-flush">
     {% for entry in entries %}
@@ -39,6 +41,7 @@
     </li>
     {% endfor %}
 </ul>
+{% endif %}
 {% endblock %}
 
 {% block js %}
