@@ -30,8 +30,8 @@
       "type": "image/png"
     },
     {
-      "src": "{{ url_for('static', filename='images/logo-192_x_192') }}",
-      "sizes": "192x192",
+      "src": "{{ url_for('static', filename='images/logo-512_x_512') }}",
+      "sizes": "512x512",
       "type": "image/png"
     }
   ]
