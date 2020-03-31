@@ -44,8 +44,50 @@
 {% endif %}
 {% endblock %}
 
+{% block footer %}
+<div id="installbar" class="invisible">
+    <nav class="navbar fixed-bottom navbar-light bg-dark">
+        <span class="text-light">Add to your Home Screen</span>
+        <form class="form-inline">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="installbtn">Install</button>
+        </form>
+    </nav>
+</div>
+{% endblock %}
+
 {% block js %}
 <script>
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-worker.js'); }
+
+const shareData = {
+  title: 'Supply Tracker',
+  text: 'Help your neighbors find essential items due to shortages from COVID-19',
+  url: 'https://ojaved20.pythonanywhere.com',
+}
+
+const btn = document.getElementById('installbtn');
+
+btn.addEventListener('click', async () => {
+  try {
+    navigator.share(shareData)
+    window.alert('Success');
+  } catch(err) {
+    window.alert(err);
+  }
+});
+
+function needsToSeePrompt() {
+  if (navigator.standalone) {
+    return false;
+  }
+  var isApple = ['iPhone', 'iPad', 'iPod'].includes(navigator.platform);
+  return isApple;
+}
+
+if (needsToSeePrompt() == true) {
+    const installbar = document.getElementById('installbar');
+    installbar.classList.remove('invisible');
+};
+
 </script>
 {% endblock %}
