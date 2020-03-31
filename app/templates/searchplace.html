@@ -2,8 +2,8 @@
 
 {% block content %}
 <div class="clearfix">
-    <h4>{{ place.business }}<span class="small"><a href="{{ url_for('search') }}" class="btn btn-primary float-right">New Search</a></span></h4>
-    <p>{{ place.address }}</p>
+    <h4>{{ place.business }}<span class="small"><a href="javascript:history.back()" class="btn btn-primary float-right">Back</a></span></h4>
+    <p><a href="https://maps.google.com/?q={{place.business}},%20{{place.address}}" target="_blank">{{ place.address }}</a></p>
     <hr>
 </div>
 {% if not results %}

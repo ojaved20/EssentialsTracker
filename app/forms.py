@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, Optional
 
 
 class AddForm(FlaskForm):
-    location = StringField('Location', validators=[DataRequired()])
+    location = StringField('Store/Location', validators=[DataRequired()])
     item = StringField('Item', validators=[DataRequired()])
     quantity = SelectField('Quantity', choices=[('out', 'Out of Stock'), ('limited', 'Limited'),
                                                 ('stocked', 'Fully Stocked')], default='stocked',

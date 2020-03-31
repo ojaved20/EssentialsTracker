@@ -1,9 +1,11 @@
-from flask import render_template, flash, redirect, url_for, jsonify, send_file
+from flask import render_template, flash, redirect, url_for, send_file
 from flask_pymongo import PyMongo
 from urllib import parse
 from datetime import datetime
 from haversine import haversine, Unit
 import time
+import pytz
+from tzlocal import get_localzone
 from app import app
 from app.forms import AddForm, SearchItemForm, SearchBusinessForm
 
@@ -76,6 +78,11 @@ def humanize_ts(timestamp=False):
 
 
 app.jinja_env.filters['humanize'] = humanize_ts
+
+
+@app.context_processor
+def inject_today_date():
+    return {'currtime': datetime.now(pytz.utc).astimezone(get_localzone())}
 
 
 @app.route('/service-worker.js')

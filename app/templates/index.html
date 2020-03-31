@@ -16,7 +16,8 @@
 
 {% block content %}
 {% if entries %}
-<h2 class="text-center">Recent updates</h2>
+<h2 class="text-center">Recent updates<span class="small"><a href=""><i class="fas fa-sync mx-3"></i></a></span></h2>
+<p class="text-center text-muted">Last Refreshed on {{ currtime.strftime('%m/%d/%Y %I:%M %p')}}</p>
 <ul class="list-group list-group-flush">
     {% for entry in entries %}
     <li class="list-group-item">
@@ -35,7 +36,7 @@
             </div>
             <div class="col">
                 <h5>{{entry.item | title}} - {{qty}} <span class="small text-muted">({{entry.timestamp | humanize}})</span></h5>
-              <p><strong>{{entry.business}}</strong> | <a href="https://maps.google.com/?q={{entry.address}}" target="_blank">{{entry.address}}</a></p>
+              <p><strong>{{entry.business}}</strong> | <a href="https://maps.google.com/?q={{entry.business}},%20{{entry.address}}" target="_blank">{{entry.address}}</a></p>
             </div>
         </div>
     </li>
