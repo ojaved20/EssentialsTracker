@@ -2,11 +2,11 @@
   "name": "COPEVID-19 Supply Tracker",
   "short_name": "Supply Tracker",
   "theme_color": "#6BBA70",
-  "background_color": "#3a3a3a",
+  "background_color": "#3A3A3A",
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
-  "start_url": "/",
+  "start_url": "/?utm_source=homescreen",
   "description": "Help your neighbors track down essentials during shortages due to COVID-19.",
   "icons": [
     {
