@@ -15,22 +15,40 @@ items = []
 itemscount = mongo.db.items.count_documents({})
 if itemscount == 0:
     items = [
-        {'item': 'Hand Sanitizer', 'priority': 1},
-        {'item': 'Sanitizing Wipes', 'priority': 1},
-        {'item': 'Sanitizing Spray', 'priority': 1},
-        {'item': 'Toilet Paper', 'priority': 1},
-        {'item': 'Hand Soap', 'priority': 1},
-        {'item': 'Milk', 'priority': 1},
-        {'item': 'Eggs', 'priority': 1},
-        {'item': 'Yogurt', 'priority': 1},
-        {'item': 'Bread', 'priority': 1},
-        {'item': 'Cereal', 'priority': 1},
-        {'item': 'Meat - Chicken', 'priority': 1},
-        {'item': 'Meat - Beef', 'priority': 1},
-        {'item': 'Meat - Fish', 'priority': 1},
-        {'item': 'Diapers', 'priority': 1},
-        {'item': 'Baby Formula', 'priority': 1},
-        {'item': 'Baby Food', 'priority': 1}
+        {'item': 'Hand Sanitizer', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Toilet Paper', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Masks', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Latex Gloves', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Disinfecting Spray', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Chlorox Wipes','Lysol Wipes'], 'timestamp': time.time()},
+        {'item': 'Disinfecting Wipes', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Hand Soap', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Dish Soap', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Laundry Detergent', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Paper Towels', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Bounty'], 'timestamp': time.time()},
+        {'item': 'Multi-surface Cleaner', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Tylenol', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Advil - Chicken', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Motrin', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Aspirin', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Cold Medicine', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Children''s Tyleonl', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Children''s Motrin', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Milk', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Eggs', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Yogurt', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Cheese', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Fruit', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Greens', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Pasta', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Canned Food', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Cereal', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Oatmeal', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Meat - Chicken', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Meat - Beef', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Meat - Fish', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Baby Formula', 'priority': 1, 'category': 'Baby', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Baby Food', 'priority': 1, 'category': 'Baby', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Diapers', 'priority': 1, 'category': 'Baby', 'altnames': [], 'timestamp': time.time()},
     ]
     mongo.db.items.insert_many(items)
 
@@ -89,6 +107,7 @@ def inject_today_date():
 def service_worker():
     return send_file('service-worker.js')
 
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -123,7 +142,10 @@ def add():
         existing_item = list(itemcol.find({'item': form.item.data.title()}))
         if not existing_item:
             new_item = itemcol.insert_one({'item': form.item.data.title(),
-                                           'priority': 1
+                                           'priority': 1,
+                                           'category': None,
+                                           'altnames': [],
+                                           'timestamp': time.time()
                                            })
             items.append(form.item.data.title())
         else:

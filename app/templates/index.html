@@ -17,7 +17,7 @@
 {% block content %}
 {% if entries %}
 <h2 class="text-center">Recent updates<span class="small"><a href=""><i class="fas fa-sync mx-3"></i></a></span></h2>
-<p class="text-center text-muted">Last Refreshed on {{ currtime.strftime('%m/%d/%Y %I:%M %p')}}</p>
+<p class="text-center text-muted">Last Refreshed on <span id="dt"></span><p>
 <ul class="list-group list-group-flush">
     {% for entry in entries %}
     <li class="list-group-item">
@@ -61,6 +61,10 @@
 
 {% block js %}
 <script>
+
+var dt = new Date();
+document.getElementById("dt").innerHTML = dt.toLocaleString();
+
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-worker.js'); }
 
 function needsToSeePrompt() {
