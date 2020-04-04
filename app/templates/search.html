@@ -3,6 +3,33 @@
 {% block content %}
 <h1 class="text-center pb-3">How would you like to search?</h1>
 <p class="text-center p-2">
+    <button class="btn btn-outline-primary col-sm-12 col-md-6" type="button" data-toggle="collapse"
+            data-target="#multiCollapseExample0" aria-expanded="false" aria-controls="multiCollapseExample0">Browse all updates
+    </button>
+</p>
+<div class="collapse multi-collapse" id="multiCollapseExample0">
+    <div class="card card-body">
+        <h5 class="text-center">Browse all updates near you</h5>
+        <form action="" method="POST" novalidate>
+            {{ formBrowse.csrf_token }}
+            <div class="form-group">
+                {{formBrowse.browse_loc.label}}
+                {{formBrowse.browse_loc(class="form-control")}}
+                {% for error in formBrowse.browse_loc.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                {{formBrowse.browse_radius.label}}
+                {{formBrowse.browse_radius(class="form-control")}}
+                {{formBrowse.browse_lat(class="form-control")}}
+                {{formBrowse.browse_long(class="form-control")}}
+            </div>
+            <div class="text-center">{{formBrowse.submit(class="btn btn-outline-success col-sm-12 col-md-3")}}</div>
+        </form>
+    </div>
+</div>
+<p class="text-center p-2">
     <button class="btn btn-outline-primary col-sm-12 col-md-6" data-toggle="collapse" href="#multiCollapseExample1"
             role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Search for an item
     </button>
@@ -17,7 +44,7 @@
                 {{formItem.item(class="form-control", list="items", autocomplete="off")}}
                 <datalist id="items">
                     {% for item in items %}
-                    <option>{{item | title}}</option>
+                    <option data-id="{{ item.item_id | title }}">{{item.item_label | title}}</option>
                     {% endfor %}
                 </datalist>
                 {% for error in formItem.item.errors %}
@@ -96,6 +123,8 @@ function initialize() {
       defaultBounds = circle.getBounds();
       document.getElementById('lat').value = position.coords.latitude;
       document.getElementById('long').value = position.coords.longitude;
+      document.getElementById('browse_lat').value = position.coords.latitude;
+      document.getElementById('browse_long').value = position.coords.longitude;
       var geocoder = new google.maps.Geocoder;
       geocoder.geocode({'latLng': geolocation}, function(results, status) {
 	        if (status == google.maps.GeocoderStatus.OK) {
@@ -111,6 +140,7 @@ function initialize() {
                 //only report if we got Good Stuff
                 if(city != '' && state != '') {
                     document.getElementById('zip').value = city + ', ' + state
+                    document.getElementById('browse_loc').value = city + ', ' + state
                 }
                 }
             });
@@ -146,6 +176,21 @@ function initialize() {
         var place = autocompleteItem.getPlace();
         document.getElementById('lat').value = place.geometry.location.lat();;
         document.getElementById('long').value = place.geometry.location.lng();;
+    });
+
+  var inputBrowse = document.getElementById('browse_loc');
+  new google.maps.places.Autocomplete(inputBrowse);
+
+  var optionsBrowse = {
+    bounds: defaultBounds,
+    types: ['geocode']
+  };
+  var autocompleteBrowse = new google.maps.places.Autocomplete(inputBrowse,optionsBrowse);
+
+    google.maps.event.addListener(autocompleteBrowse, 'place_changed', function () {
+        var place = autocompleteBrowse.getPlace();
+        document.getElementById('browse_lat').value = place.geometry.location.lat();;
+        document.getElementById('browse_long').value = place.geometry.location.lng();;
     });
 }
 

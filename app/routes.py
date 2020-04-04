@@ -7,7 +7,7 @@ import time
 import pytz
 from tzlocal import get_localzone
 from app import app
-from app.forms import AddForm, SearchItemForm, SearchBusinessForm
+from app.forms import AddForm, SearchItemForm, SearchBusinessForm, BrowseItemsForm
 
 mongo = PyMongo(app)
 
@@ -19,15 +19,17 @@ if itemscount == 0:
         {'item': 'Toilet Paper', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Masks', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Latex Gloves', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Disinfecting Spray', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Chlorox Wipes','Lysol Wipes'], 'timestamp': time.time()},
-        {'item': 'Disinfecting Wipes', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Tissues', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Disinfecting Spray', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Disinfecting Wipes', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Chlorox Wipes','Lysol Wipes'], 'timestamp': time.time()},
         {'item': 'Hand Soap', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Dish Soap', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Laundry Detergent', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Paper Towels', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Bounty'], 'timestamp': time.time()},
         {'item': 'Multi-surface Cleaner', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Rubbing Alcohol', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Tylenol', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Advil - Chicken', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Advil', 'priority': 1, 'category': 'Medical', 'altnames': ['Ibuprofin'], 'timestamp': time.time()},
         {'item': 'Motrin', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Aspirin', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Cold Medicine', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
@@ -49,6 +51,7 @@ if itemscount == 0:
         {'item': 'Baby Formula', 'priority': 1, 'category': 'Baby', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Baby Food', 'priority': 1, 'category': 'Baby', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Diapers', 'priority': 1, 'category': 'Baby', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Baby Wipes', 'priority': 1, 'category': 'Baby', 'altnames': [], 'timestamp': time.time()}
     ]
     mongo.db.items.insert_many(items)
 
@@ -215,7 +218,15 @@ def search():
         return redirect(url_for('search_item', item=parse.quote(formItem.item.data), lat=parse.quote(formItem.lat.data),
                                 long=parse.quote(formItem.long.data), radius=parse.quote(formItem.radius.data),
                                 zip=parse.quote(loc)))
-    return render_template('search.html', formPlace=formPlace, formItem=formItem, place=place, items=items,
+    formBrowse = BrowseItemsForm()
+    if formBrowse.validate_on_submit():
+        loc = formBrowse.browse_loc.data
+        if formBrowse.browse_loc.data == '':
+            loc = 'Fairfax, VA'
+        return redirect(url_for('browse', lat=parse.quote(formBrowse.browse_lat.data),
+                                long=parse.quote(formBrowse.browse_long.data), radius=parse.quote(formBrowse.browse_radius.data),
+                                loc=parse.quote(loc)))
+    return render_template('search.html', formPlace=formPlace, formItem=formItem, formBrowse=formBrowse, place=place, items=items,
                            title="Search")
 
 
@@ -279,6 +290,43 @@ def search_item(item, lat, long, zip, radius):
 
     return render_template('searchitem.html', results=results, curritem=item, lat=lat, long=long, radius=radius,
                            zip=zip, title="Item Search Results")
+
+
+@app.route('/browse/<lat>/<long>/<loc>/<radius>')
+def browse(lat, long, loc, radius):
+    loc = parse.unquote(loc)
+    mycol = mongo.db.entries
+    pipeline = [
+        {'$sort': {'timestamp': -1}},
+        {'$group':
+             {'_id': '$place_id',
+              'latest': {'$first': '$timestamp'},
+              'quantity': {'$first': '$quantity'},
+              'business': {'$first': '$business'},
+              'address': {'$first': '$address'},
+              'lat': {'$first': '$lat'},
+              'long': {'$first': '$long'},
+              'item': {'$first': '$item'}
+              }
+         },
+        {'$sort': {'latest': -1}}
+    ]
+    results = list(mycol.aggregate(pipeline))
+
+    output = []
+    user = (float(parse.unquote(lat)), float(parse.unquote(long)))
+    for result in results:
+        business = (float(result['lat']), float(result['long']))
+        distance = haversine(user, business, unit='mi')
+        if distance <= int(radius):
+            result['distance'] = distance
+            output.append(result)
+
+    results = output
+
+    return render_template('browse.html', results=results, lat=lat, long=long, radius=radius,
+                           loc=loc, title="All Updates Near You")
+
 
 @app.route('/about')
 def about():
