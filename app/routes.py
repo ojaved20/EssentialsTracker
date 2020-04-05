@@ -20,8 +20,8 @@ if itemscount == 0:
         {'item': 'Masks', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Latex Gloves', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Tissues', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Disinfecting Spray', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Disinfecting Wipes', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Chlorox Wipes','Lysol Wipes'], 'timestamp': time.time()},
+        {'item': 'Disinfecting Spray', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Disinfectant Spray'], 'timestamp': time.time()},
+        {'item': 'Disinfecting Wipes', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Disinfectant Wipes','Chlorox Wipes','Lysol Wipes'], 'timestamp': time.time()},
         {'item': 'Hand Soap', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Dish Soap', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Laundry Detergent', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
@@ -55,9 +55,11 @@ if itemscount == 0:
     ]
     mongo.db.items.insert_many(items)
 
-itemsquery = mongo.db.items.find({}, {'item': 1, '_id': 0}).sort('priority', -1)
+itemsquery = mongo.db.items.find({}, {'item': 1, 'altnames': 1, '_id': 0}).sort('priority', -1)
 for item in itemsquery:
-    items.append(item['item'])
+    items.append({'item_id': item['item'], 'item_label': item['item']})
+    #for altname in item['altnames']:
+        #items.append({'item_id': item['item'], 'item_label': altname})
 
 
 def humanize_ts(timestamp=False):
@@ -299,14 +301,13 @@ def browse(lat, long, loc, radius):
     pipeline = [
         {'$sort': {'timestamp': -1}},
         {'$group':
-             {'_id': '$place_id',
+             {'_id': {'place_id':'$place_id', 'item':'$item'},
               'latest': {'$first': '$timestamp'},
               'quantity': {'$first': '$quantity'},
               'business': {'$first': '$business'},
               'address': {'$first': '$address'},
               'lat': {'$first': '$lat'},
-              'long': {'$first': '$long'},
-              'item': {'$first': '$item'}
+              'long': {'$first': '$long'}
               }
          },
         {'$sort': {'latest': -1}}

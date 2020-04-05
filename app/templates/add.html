@@ -26,7 +26,7 @@
         {{form.item(class="form-control", list="items", autocomplete="off")}}
         <datalist id="items">
             {% for item in items %}
-            <option>{{item | title}}</option>
+            <option data-id="{{ item.item_id | title }}">{{ item.item_label | title }}</option>
             {% endfor %}
         </datalist>
         {% for error in form.item.errors %}
