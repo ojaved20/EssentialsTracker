@@ -131,6 +131,9 @@ def add():
         'long': None
     }
     if form.validate_on_submit():
+        if form.name.data == 'None':
+            flash('Invalid location')
+            return render_template('add.html', form=form, items=items, place=place, title="Add an Update")
         entry = {
             'item': form.item.data.title(),
             'quantity': form.quantity.data,
