@@ -36,7 +36,10 @@
             </div>
             <div class="col">
                 <h5>{{entry.item | title}} - {{qty}} <span class="small text-muted">({{entry.timestamp | humanize}})</span></h5>
-              <p><strong>{{entry.business}}</strong> | <a href="https://maps.google.com/?q={{entry.business}},%20{{entry.address}}" target="_blank">{{entry.address}}</a></p>
+                <p><strong>{{entry.business}}</strong> | <a href="https://maps.google.com/?q={{entry.business}},%20{{entry.address}}" target="_blank">{{entry.address}}</a></p>
+                {% if entry.comment %}
+                <p class="text-muted"><em>"{{entry.comment}}"</em></p>
+                {% endif %}
             </div>
         </div>
     </li>

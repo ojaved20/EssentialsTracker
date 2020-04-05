@@ -29,6 +29,9 @@
             </div>
             <div class="col">
                 <h5>{{result._id}} - {{qty}} <span class="small text-muted">({{result.latest | humanize}})</span></h5>
+                {% if result.comment %}
+                <p class="text-muted"><em>"{{result.comment}}"</em></p>
+                {% endif %}
             </div>
         </div>
     </li>

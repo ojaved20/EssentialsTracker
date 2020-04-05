@@ -142,7 +142,8 @@ def add():
             'business': form.name.data,
             'address': form.address.data,
             'lat': form.lat.data,
-            'long': form.long.data
+            'long': form.long.data,
+            'comment': form.comment.data
         }
         mycol = mongo.db.entries
         entry_id = mycol.insert_one(entry)
@@ -250,7 +251,8 @@ def search_place(place_id, business, address):
         {'$group':
              {'_id': '$item',
               'latest': {'$first': '$timestamp'},
-              'quantity': {'$first': '$quantity'}
+              'quantity': {'$first': '$quantity'},
+              'comment': {'$first': '$comment'}
               }
          },
         {'$sort': {'latest': -1}}
@@ -275,7 +277,8 @@ def search_item(item, lat, long, zip, radius):
               'business': {'$first': '$business'},
               'address': {'$first': '$address'},
               'lat': {'$first': '$lat'},
-              'long': {'$first': '$long'}
+              'long': {'$first': '$long'},
+              'comment': {'$first': '$comment'}
               }
          },
         {'$sort': {'latest': -1}}
@@ -310,7 +313,8 @@ def browse(lat, long, loc, radius):
               'business': {'$first': '$business'},
               'address': {'$first': '$address'},
               'lat': {'$first': '$lat'},
-              'long': {'$first': '$long'}
+              'long': {'$first': '$long'},
+              'comment': {'$first': '$comment'}
               }
          },
         {'$sort': {'latest': -1}}

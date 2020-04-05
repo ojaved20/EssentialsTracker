@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, HiddenField, SelectField, SubmitField
+from wtforms.widgets import TextArea
 from wtforms.validators import DataRequired, Optional
 
 
@@ -14,6 +15,7 @@ class AddForm(FlaskForm):
     address = HiddenField('Address', validators=[DataRequired()])
     lat = HiddenField('Lat', validators=[DataRequired()])
     long = HiddenField('Long', validators=[DataRequired()])
+    comment = StringField('Comments (optional)', widget=TextArea())
     submit = SubmitField('Save')
 
 
