@@ -35,7 +35,7 @@
                 {% if result.comment %}
                 <p class="text-muted"><em>"{{result.comment}}"</em></p>
                 {% endif %}
-                <p><a href="{{ url_for('search_place', place_id=result._id, business=result.business, address=result.address) }}">View other items at this store</a></p>
+                <p><a href="{{ url_for('search_place', place_id=result._id['place_id'], business=result.business, address=result.address) }}">View other items at this store</a></p>
             </div>
         </div>
     </li>
