@@ -336,6 +336,112 @@ def browse(lat, long, loc, radius):
                            loc=loc, title="All Updates Near You")
 
 
+@app.route('/browse/item/<lat>/<long>/<loc>/<radius>')
+def browseitem(lat, long, loc, radius):
+    loc = parse.unquote(loc)
+    mycol = mongo.db.entries
+
+    item_pipleine = [
+        {'$group':
+             {'_id': '$item'},
+         },
+        {'$sort': {'_id': 1}}
+    ]
+
+    item_results = list(mycol.aggregate(item_pipleine))
+    output = []
+    for item in item_results:
+        pipeline = [
+            {'$match': {'item': item['_id']}},
+            {'$sort': {'timestamp': -1}},
+            {'$group':
+                 {'_id': '$place_id',
+                  'latest': {'$first': '$timestamp'},
+                  'quantity': {'$first': '$quantity'},
+                  'business': {'$first': '$business'},
+                  'address': {'$first': '$address'},
+                  'lat': {'$first': '$lat'},
+                  'long': {'$first': '$long'},
+                  'comment': {'$first': '$comment'}
+                  }
+             },
+            {'$sort': {'latest': -1}}
+        ]
+
+        results = mycol.aggregate(pipeline)
+
+        inventory = []
+        user = (float(parse.unquote(lat)), float(parse.unquote(long)))
+        for result in results:
+            business = (float(result['lat']), float(result['long']))
+            distance = haversine(user, business, unit='mi')
+            if distance <= int(500):
+                result['distance'] = distance
+                inventory.append(result)
+        item['inventory'] = inventory
+        output.append(item)
+
+    results = output
+
+    return render_template('browseitem.html', results=results, lat=lat, long=long, radius=radius,
+                           loc=loc, title="All Updates Near You")
+
+
+@app.route('/browse/stores/<lat>/<long>/<loc>/<radius>')
+def browsestore(lat, long, loc, radius):
+    loc = parse.unquote(loc)
+    mycol = mongo.db.entries
+    user = (float(parse.unquote(lat)), float(parse.unquote(long)))
+
+    store_pipleine = [
+        {'$group':
+             {'_id': '$place_id',
+              'business': {'$first': '$business'},
+              'address': {'$first': '$address'},
+              'lat': {'$first': '$lat'},
+              'long': {'$first': '$long'},
+              }
+         },
+        {'$sort': {'business': 1}}
+    ]
+
+    store_results = list(mycol.aggregate(store_pipleine))
+    output = []
+    for store in store_results:
+        business = (float(store['lat']), float(store['long']))
+        distance = haversine(user, business, unit='mi')
+        if distance <= int(500):
+            store['distance'] = distance
+
+            inventory = []
+            pipeline = [
+                {'$match': {'place_id': store['_id']}},
+                {'$sort': {'timestamp': -1}},
+                {'$group':
+                     {'_id': '$item',
+                      'latest': {'$first': '$timestamp'},
+                      'quantity': {'$first': '$quantity'},
+                      'comment': {'$first': '$comment'}
+                      }
+                 },
+                {'$sort': {'latest': -1}}
+            ]
+
+            results = mycol.aggregate(pipeline)
+
+            for result in results:
+                inventory.append(result)
+
+            store['inventory'] = inventory
+            output.append(store)
+
+    results = output
+    results.sort(key= lambda x: int(x['distance']))
+
+    return render_template('browsestore.html', results=results, lat=lat, long=long, radius=radius,
+                           loc=loc, title="All Updates Near You")
+
+
 @app.route('/about')
 def about():
     return render_template('about.html', title="About")

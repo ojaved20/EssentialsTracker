@@ -11,6 +11,11 @@
 <p>We rely on users to populate our database. Help your neighbors by adding an update
     for items the next time you go out to a store.</p>
 {% else %}
+<ul class="nav nav-pills nav-justified pb-3">
+    <a class="nav-item nav-link active" href="#">By Last Updated</a>
+    <a class="nav-item nav-link" href="{{ url_for('browseitem', lat=lat, long=long, loc=loc, radius=radius)  }}">Group By Item</a>
+    <a class="nav-item nav-link" href="{{ url_for('browsestore', lat=lat, long=long, loc=loc, radius=radius)  }}">Group By Store</a>
+</ul>
 <ul class="list-group list-group-flush mt-5">
     {% for result in results %}
     <li class="list-group-item">

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="clearfix">
+    <h4>All updates<span class="small"><a href="javascript:history.back()" class="btn btn-primary float-right">Back</a></span></h4>
+    <p>Within {{ radius }} miles of {{ loc }}</p>
+    <hr>
+</div>
+{% if not results %}
+<p>Nothing Yet :( </p>
+<p>We rely on users to populate our database. Help your neighbors by adding an update
+    for items the next time you go out to a store.</p>
+{% else %}
+<ul class="nav nav-pills nav-justified pb-3">
+    <a class="nav-item nav-link" href="{{ url_for('browse', lat=lat, long=long, loc=loc, radius=radius)  }}">By Last Updated</a>
+    <a class="nav-item nav-link" href="{{ url_for('browseitem', lat=lat, long=long, loc=loc, radius=radius)  }}">Group By Item</a>
+    <a class="nav-item nav-link active" href="#">Group By Store</a>
+</ul>
+{% for result in results %}
+<div class="card mb-3">
+  <div class="card-header">
+      <strong>{{result.business}}</strong> | <a href="https://maps.google.com/?q={{result.business}},%20{{result.address}}" target="_blank">{{result.address}}</a>
+            <span class="small text-muted p-1"><i class="fas fa-map-marker-alt p-1"></i>{{result.distance | round}} Miles</span>
+  </div>
+<ul class="list-group list-group-flush">
+
+    {% for inv in result.inventory %}
+    <li class="list-group-item">
+        <p>
+            {% if inv.quantity=='limited' %}
+        {% set qty = 'Limited Stock' %}
+        <span style="color:tomato"><i class="fas fa-exclamation-circle"></i></span>
+        {% elif inv.quantity=='stocked' %}
+        {% set qty = 'Stocked' %}
+        <span style="color:mediumseagreen"><i class="fas fa-thumbs-up"></i></span>
+        {% else %}
+        {% set qty = 'Out of Stock' %}
+        <span style="color:crimson"><i class="fas fa-ban"></i></span>
+        {% endif %}
+            <strong>{{inv._id}}</strong> -
+            <strong>{{qty}}</strong>
+        <span class="small text-muted p-1">({{inv.latest | humanize}})</span>
+            </p>
+        {% if inv.comment %}
+        <p class="text-muted"><em>"{{inv.comment}}"</em></p>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+</div>
+{% endfor %}
+{% endif %}
+
+{% endblock %}
