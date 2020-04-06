@@ -190,6 +190,18 @@ def addplus(place_id, business, address, lat, long):
         }
         mycol = mongo.db.entries
         entry_id = mycol.insert_one(entry)
+        itemcol = mongo.db.items
+        existing_item = list(itemcol.find({'item': form.item.data.title()}))
+        if not existing_item:
+            new_item = itemcol.insert_one({'item': form.item.data.title(),
+                                           'priority': 1,
+                                           'category': None,
+                                           'altnames': [],
+                                           'timestamp': time.time()
+                                           })
+            items.append(form.item.data.title())
+        else:
+            itemcol.update_one({'item': form.item.data.title()}, {'$inc': {'priority': 1}})
         flash('New entry added')
         return redirect(url_for('addsplash', place_id=parse.quote(form.place_id.data),
                                 business=parse.quote(form.name.data), address=parse.quote(form.address.data),
