@@ -2,7 +2,8 @@
 
 {% block content %}
 <div class="clearfix">
-    <h4>{{curritem | title}}<span class="small"><a href="javascript:history.back()" class="btn btn-primary float-right">Back</a></span></h4>
+    <p class="mb-0">Showing closest matches for<span class="small"><a href="javascript:history.back()" class="btn btn-primary float-right">Back</a></span></p>
+    <h4>{{curritem | title}}</h4>
     <p>Within {{ radius }} miles of {{ zip }}</p>
     <hr>
 </div>
@@ -28,10 +29,11 @@
                 {% endif %}
             </div>
             <div class="col">
-                <h5>{{result.business}}<span class="small text-muted p-1">({{result.latest | humanize}})</span><span
-                        class="small text-muted p-1"><i class="fas fa-map-marker-alt p-1"></i>{{result.distance | round}} Miles</span>
-                </h5>
-                <p><a href="https://maps.google.com/?q={{result.business}},%20{{result.address}}" target="_blank">{{result.address}}</a> - <strong>{{qty}}</strong></p>
+                <h5>{{result._id['item'] | title}} - {{qty}} <span class="small text-muted">({{result.latest | humanize}})</span></h5>
+                <p><strong>{{result.business}}</strong> |
+                <a href="https://maps.google.com/?q={{result.business}},%20{{result.address}}" target="_blank">{{result.address}}</a>
+                <span class="small text-muted p-1"><i class="fas fa-map-marker-alt p-1"></i>{{result.distance | round}} Miles</span>
+                </p>
                 {% if result.comment %}
                 <p class="text-muted"><em>"{{result.comment}}"</em></p>
                 {% endif %}

@@ -16,18 +16,18 @@ itemscount = mongo.db.items.count_documents({})
 if itemscount == 0:
     items = [
         {'item': 'Hand Sanitizer', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Toilet Paper', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Toilet Paper', 'priority': 1, 'category': 'Hygiene', 'altnames': ['Charmin Toilet Paper'], 'timestamp': time.time()},
         {'item': 'Masks', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Latex Gloves', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Disposable Gloves', 'priority': 1, 'category': 'Hygiene', 'altnames': ['Latex Gloves', 'Nitrile Gloves'], 'timestamp': time.time()},
         {'item': 'Tissues', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Disinfecting Spray', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Disinfectant Spray'], 'timestamp': time.time()},
-        {'item': 'Disinfecting Wipes', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Disinfectant Wipes','Chlorox Wipes','Lysol Wipes'], 'timestamp': time.time()},
+        {'item': 'Disinfecting Spray', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Disinfectant Spray', 'Lysol Spray', 'Clorox Spray'], 'timestamp': time.time()},
+        {'item': 'Disinfecting Wipes', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Disinfectant Wipes','Lysol Wipes','Clorox Wipes'], 'timestamp': time.time()},
         {'item': 'Hand Soap', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Dish Soap', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Laundry Detergent', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Paper Towels', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Bounty'], 'timestamp': time.time()},
+        {'item': 'Paper Towels', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Bounty Paper Towels'], 'timestamp': time.time()},
         {'item': 'Multi-surface Cleaner', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Rubbing Alcohol', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Rubbing Alcohol', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Liquid Alohol'], 'timestamp': time.time()},
         {'item': 'Tylenol', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Advil', 'priority': 1, 'category': 'Medical', 'altnames': ['Ibuprofin'], 'timestamp': time.time()},
         {'item': 'Motrin', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
@@ -39,8 +39,8 @@ if itemscount == 0:
         {'item': 'Eggs', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Yogurt', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Cheese', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Fruit', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Greens', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Produce - Fruit', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Produce - Greens', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Pasta', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Canned Food', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Cereal', 'priority': 1, 'category': 'Food', 'altnames': [], 'timestamp': time.time()},
@@ -58,8 +58,8 @@ if itemscount == 0:
 itemsquery = mongo.db.items.find({}, {'item': 1, 'altnames': 1, '_id': 0}).sort('priority', -1)
 for item in itemsquery:
     items.append({'item_id': item['item'], 'item_label': item['item']})
-    #for altname in item['altnames']:
-        #items.append({'item_id': item['item'], 'item_label': altname})
+    for altname in item['altnames']:
+        items.append({'item_id': item['item'], 'item_label': altname})
 
 
 def humanize_ts(timestamp=False):
@@ -113,6 +113,11 @@ def service_worker():
     return send_file('service-worker.js')
 
 
+@app.route('/offline.html')
+def offline():
+    return render_template('offline.html')
+
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -148,7 +153,11 @@ def add():
         mycol = mongo.db.entries
         entry_id = mycol.insert_one(entry)
         itemcol = mongo.db.items
-        existing_item = list(itemcol.find({'item': form.item.data.title()}))
+        existing_item = list(
+            itemcol.find(
+                {'$or':[{'item': form.item.data.title()},{'altnames': {'$in': [form.item.data.title()]}}]}
+            )
+        )
         if not existing_item:
             new_item = itemcol.insert_one({'item': form.item.data.title(),
                                            'priority': 1,
@@ -156,7 +165,8 @@ def add():
                                            'altnames': [],
                                            'timestamp': time.time()
                                            })
-            items.append(form.item.data.title())
+
+            items.append({'item_id': form.item.data.title(), 'item_label': form.item.data.title()})
         else:
             itemcol.update_one({'item': form.item.data.title()}, {'$inc': {'priority': 1}})
         flash('New entry added')
@@ -199,7 +209,8 @@ def addplus(place_id, business, address, lat, long):
                                            'altnames': [],
                                            'timestamp': time.time()
                                            })
-            items.append(form.item.data.title())
+
+            items.append({'item_id': form.item.data.title(), 'item_label': form.item.data.title()})
         else:
             itemcol.update_one({'item': form.item.data.title()}, {'$inc': {'priority': 1}})
         flash('New entry added')
@@ -279,22 +290,51 @@ def search_item(item, lat, long, zip, radius):
     item = parse.unquote(item)
     zip = parse.unquote(zip)
     mycol = mongo.db.entries
+    term = item
+    for itemterm in items:
+        labels = itemterm['item_label']
+        itemid = itemterm['item_id']
+        if item in labels and item not in itemid:
+            term= item+' '+itemterm['item_id']
+
     pipeline = [
-        {'$match': {'item': item.title()}},
+        {
+            '$searchBeta': {
+                'search': {
+                    'query': term.title(),
+                    'path': 'item'
+                }
+            }
+        },
         {'$sort': {'timestamp': -1}},
         {'$group':
-             {'_id': '$place_id',
+             {'_id': {'place_id':'$place_id', 'item':'$item'},
               'latest': {'$first': '$timestamp'},
               'quantity': {'$first': '$quantity'},
               'business': {'$first': '$business'},
               'address': {'$first': '$address'},
               'lat': {'$first': '$lat'},
               'long': {'$first': '$long'},
-              'comment': {'$first': '$comment'}
+              'comment': {'$first': '$comment'},
+              'score': {'$first': {'$meta': 'searchScore'}}
               }
          },
-        {'$sort': {'latest': -1}}
+        {'$project':
+             {
+                 '_id': 1,
+                 'latest': 1,
+                 'quantity': 1,
+                 'business': 1,
+                 'address': 1,
+                 'lat': 1,
+                 'long': 1,
+                 'comment': 1,
+                 'score': 1
+             }
+        },
+        {'$sort': {'score':-1,'latest': -1}}
     ]
+
     results = list(mycol.aggregate(pipeline))
 
     output = []
@@ -309,7 +349,7 @@ def search_item(item, lat, long, zip, radius):
     results = output
 
     return render_template('searchitem.html', results=results, curritem=item, lat=lat, long=long, radius=radius,
-                           zip=zip, title="Item Search Results")
+                           zip=zip, title="Item Search Results", term=term)
 
 
 @app.route('/browse/<lat>/<long>/<loc>/<radius>')
