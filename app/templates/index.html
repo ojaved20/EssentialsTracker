@@ -72,10 +72,20 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-w
 
 function needsToSeePrompt() {
   if (navigator.standalone) {
+    gtag('event', 'homescreen');
     return false;
   }
   var isApple = ['iPhone', 'iPad', 'iPod'].includes(navigator.platform);
-  return isApple;
+
+  let userAgentString =  navigator.userAgent;
+  let chromeAgent =  userAgentString.indexOf("Chrome") > -1;
+  let criOSAgent = userAgentString.indexOf("CriOS") > -1
+  let safariAgent =  userAgentString.indexOf("Safari") > -1;
+  if ((chromeAgent || criOSAgent) && safariAgent) safariAgent = false;
+
+  let seePrompt = false;
+  if (isApple && safariAgent) seePrompt = true;
+  return seePrompt;
 }
 
 if (needsToSeePrompt() == true) {

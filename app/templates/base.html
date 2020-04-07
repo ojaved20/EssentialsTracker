@@ -74,6 +74,22 @@
 </div>
 {% block footer %}{% endblock %}
 {% block js %}{% endblock %}
+<script>
+    window.addEventListener('appinstalled', function(event) {
+        gtag('event', 'installed');
+    });
+
+    window.addEventListener('beforeinstallprompt', function(event) {
+         gtag('event', 'intall_banner');
+         event.userChoice.then(function(result) {
+               if (result.outcome === 'accepted') {
+                    gtag('event','acceptinstall');
+               } else {
+                    gtag('event','declineinstall');
+               }
+         });
+    });
+</script>
 
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"

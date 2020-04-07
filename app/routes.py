@@ -15,7 +15,7 @@ items = []
 itemscount = mongo.db.items.count_documents({})
 if itemscount == 0:
     items = [
-        {'item': 'Hand Sanitizer', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
+        {'item': 'Hand Sanitizer', 'priority': 1, 'category': 'Hygiene', 'altnames': ['Purell'], 'timestamp': time.time()},
         {'item': 'Toilet Paper', 'priority': 1, 'category': 'Hygiene', 'altnames': ['Charmin Toilet Paper'], 'timestamp': time.time()},
         {'item': 'Masks', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Disposable Gloves', 'priority': 1, 'category': 'Hygiene', 'altnames': ['Latex Gloves', 'Nitrile Gloves'], 'timestamp': time.time()},
@@ -297,45 +297,81 @@ def search_item(item, lat, long, zip, radius):
         if item in labels and item not in itemid:
             term= item+' '+itemterm['item_id']
 
-    pipeline = [
-        {
-            '$searchBeta': {
-                'search': {
-                    'query': term.title(),
-                    'path': 'item'
+    try:
+        pipeline = [
+            {
+                '$searchBeta': {
+                    'search': {
+                        'query': term.title(),
+                        'path': 'item'
+                    }
                 }
-            }
-        },
-        {'$sort': {'timestamp': -1}},
-        {'$group':
-             {'_id': {'place_id':'$place_id', 'item':'$item'},
-              'latest': {'$first': '$timestamp'},
-              'quantity': {'$first': '$quantity'},
-              'business': {'$first': '$business'},
-              'address': {'$first': '$address'},
-              'lat': {'$first': '$lat'},
-              'long': {'$first': '$long'},
-              'comment': {'$first': '$comment'},
-              'score': {'$first': {'$meta': 'searchScore'}}
-              }
-         },
-        {'$project':
-             {
-                 '_id': 1,
-                 'latest': 1,
-                 'quantity': 1,
-                 'business': 1,
-                 'address': 1,
-                 'lat': 1,
-                 'long': 1,
-                 'comment': 1,
-                 'score': 1
-             }
-        },
-        {'$sort': {'score':-1,'latest': -1}}
-    ]
+            },
+            {'$sort': {'timestamp': -1}},
+            {'$group':
+                 {'_id': {'place_id': '$place_id', 'item': '$item'},
+                  'latest': {'$first': '$timestamp'},
+                  'quantity': {'$first': '$quantity'},
+                  'business': {'$first': '$business'},
+                  'address': {'$first': '$address'},
+                  'lat': {'$first': '$lat'},
+                  'long': {'$first': '$long'},
+                  'comment': {'$first': '$comment'},
+                  'score': {'$first': {'$meta': 'searchScore'}}
+                  }
+             },
+            {'$project':
+                {
+                    '_id': 1,
+                    'latest': 1,
+                    'quantity': 1,
+                    'business': 1,
+                    'address': 1,
+                    'lat': 1,
+                    'long': 1,
+                    'comment': 1,
+                    'score': 1
+                }
+            },
+            {'$sort': {'score': -1, 'latest': -1}}
+        ]
 
-    results = list(mycol.aggregate(pipeline))
+        results = list(mycol.aggregate(pipeline))
+    except:
+        pipeline = [
+            {
+                '$match': {
+                    'item': item.title()
+                }
+            },
+            {'$sort': {'timestamp': -1}},
+            {'$group':
+                 {'_id': {'place_id': '$place_id', 'item': '$item'},
+                  'latest': {'$first': '$timestamp'},
+                  'quantity': {'$first': '$quantity'},
+                  'business': {'$first': '$business'},
+                  'address': {'$first': '$address'},
+                  'lat': {'$first': '$lat'},
+                  'long': {'$first': '$long'},
+                  'comment': {'$first': '$comment'}
+                  }
+             },
+            {'$project':
+                {
+                    '_id': 1,
+                    'latest': 1,
+                    'quantity': 1,
+                    'business': 1,
+                    'address': 1,
+                    'lat': 1,
+                    'long': 1,
+                    'comment': 1
+                }
+            },
+            {'$sort': {'latest': -1}}
+        ]
+
+        results = list(mycol.aggregate(pipeline))
 
     output = []
     user = (float(parse.unquote(lat)), float(parse.unquote(long)))
