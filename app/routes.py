@@ -463,7 +463,7 @@ def browseitem(lat, long, loc, radius):
         for result in results:
             business = (float(result['lat']), float(result['long']))
             distance = haversine(user, business, unit='mi')
-            if distance <= int(500):
+            if distance <= int(radius):
                 result['distance'] = distance
                 inventory.append(result)
         item['inventory'] = inventory
@@ -498,7 +498,7 @@ def browsestore(lat, long, loc, radius):
     for store in store_results:
         business = (float(store['lat']), float(store['long']))
         distance = haversine(user, business, unit='mi')
-        if distance <= int(500):
+        if distance <= int(radius):
             store['distance'] = distance
 
             inventory = []

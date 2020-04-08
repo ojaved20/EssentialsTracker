@@ -37,8 +37,8 @@
         {% set qty = 'Out of Stock' %}
         <span style="color:crimson"><i class="fas fa-ban"></i></span>
         {% endif %}
-            <strong>{{inv._id}}</strong> -
-            <strong>{{qty}}</strong>
+            <span>{{inv._id}}</span> -
+            <span>{{qty}}</span>
         <span class="small text-muted p-1">({{inv.latest | humanize}})</span>
             </p>
         {% if inv.comment %}
