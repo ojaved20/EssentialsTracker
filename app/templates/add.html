@@ -43,14 +43,16 @@
     <div class="form-group">
         {{form.comment.label}}
         {{form.comment(class="form-control", rows="3")}}
-        <small class="form-text text-muted">Examples: Limits per customer or must ask for item behind the counter</small>
+        <small class="form-text text-muted">Examples: Limits per customer or must ask for item behind the
+            counter</small>
     </div>
     <div class="text-center">{{form.submit(class="btn btn-outline-primary col-sm-12 col-md-3")}}</div>
 </form>
 {% endblock %}
 
 {% block js %}
-<script id = google src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places&key=AIzaSyDPDzp8uswA-DCYwSdWU4k3mgSuYqDu6nk"></script>
+<script id=google
+        src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places&key=AIzaSyDPDzp8uswA-DCYwSdWU4k3mgSuYqDu6nk"></script>
 <script>
 
 function initialize() {
@@ -90,5 +92,6 @@ function initialize() {
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
+
 </script>
 {% endblock %}

@@ -15,19 +15,27 @@ items = []
 itemscount = mongo.db.items.count_documents({})
 if itemscount == 0:
     items = [
-        {'item': 'Hand Sanitizer', 'priority': 1, 'category': 'Hygiene', 'altnames': ['Purell'], 'timestamp': time.time()},
-        {'item': 'Toilet Paper', 'priority': 1, 'category': 'Hygiene', 'altnames': ['Charmin Toilet Paper'], 'timestamp': time.time()},
+        {'item': 'Hand Sanitizer', 'priority': 1, 'category': 'Hygiene', 'altnames': ['Purell'],
+         'timestamp': time.time()},
+        {'item': 'Toilet Paper', 'priority': 1, 'category': 'Hygiene', 'altnames': ['Charmin Toilet Paper'],
+         'timestamp': time.time()},
         {'item': 'Masks', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Disposable Gloves', 'priority': 1, 'category': 'Hygiene', 'altnames': ['Latex Gloves', 'Nitrile Gloves'], 'timestamp': time.time()},
+        {'item': 'Disposable Gloves', 'priority': 1, 'category': 'Hygiene',
+         'altnames': ['Latex Gloves', 'Nitrile Gloves'], 'timestamp': time.time()},
         {'item': 'Tissues', 'priority': 1, 'category': 'Hygiene', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Disinfecting Spray', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Disinfectant Spray', 'Lysol Spray', 'Clorox Spray'], 'timestamp': time.time()},
-        {'item': 'Disinfecting Wipes', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Disinfectant Wipes','Lysol Wipes','Clorox Wipes'], 'timestamp': time.time()},
+        {'item': 'Disinfecting Spray', 'priority': 1, 'category': 'Cleaning',
+         'altnames': ['Disinfectant Spray', 'Lysol Spray', 'Clorox Spray'], 'timestamp': time.time()},
+        {'item': 'Disinfecting Wipes', 'priority': 1, 'category': 'Cleaning',
+         'altnames': ['Disinfectant Wipes', 'Lysol Wipes', 'Clorox Wipes'], 'timestamp': time.time()},
         {'item': 'Hand Soap', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Dish Soap', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Laundry Detergent', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Paper Towels', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Bounty Paper Towels'], 'timestamp': time.time()},
-        {'item': 'Multi-surface Cleaner', 'priority': 1, 'category': 'Cleaning', 'altnames': [], 'timestamp': time.time()},
-        {'item': 'Rubbing Alcohol', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Liquid Alohol'], 'timestamp': time.time()},
+        {'item': 'Paper Towels', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Bounty Paper Towels'],
+         'timestamp': time.time()},
+        {'item': 'Multi-surface Cleaner', 'priority': 1, 'category': 'Cleaning', 'altnames': [],
+         'timestamp': time.time()},
+        {'item': 'Rubbing Alcohol', 'priority': 1, 'category': 'Cleaning', 'altnames': ['Liquid Alohol'],
+         'timestamp': time.time()},
         {'item': 'Tylenol', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
         {'item': 'Advil', 'priority': 1, 'category': 'Medical', 'altnames': ['Ibuprofin'], 'timestamp': time.time()},
         {'item': 'Motrin', 'priority': 1, 'category': 'Medical', 'altnames': [], 'timestamp': time.time()},
@@ -60,6 +68,12 @@ for item in itemsquery:
     items.append({'item_id': item['item'], 'item_label': item['item']})
     for altname in item['altnames']:
         items.append({'item_id': item['item'], 'item_label': altname})
+
+
+def format_ts(timestamp=False):
+    formatted_ts = datetime.fromtimestamp(timestamp).astimezone(pytz.timezone('US/Eastern')).strftime(
+        '%A, %m/%d/%Y %I:%M %p')
+    return formatted_ts
 
 
 def humanize_ts(timestamp=False):
@@ -101,6 +115,7 @@ def humanize_ts(timestamp=False):
 
 
 app.jinja_env.filters['humanize'] = humanize_ts
+app.jinja_env.filters['format_ts'] = format_ts
 
 
 @app.context_processor
@@ -155,7 +170,7 @@ def add():
         itemcol = mongo.db.items
         existing_item = list(
             itemcol.find(
-                {'$or':[{'item': form.item.data.title()},{'altnames': {'$in': [form.item.data.title()]}}]}
+                {'$or': [{'item': form.item.data.title()}, {'altnames': {'$in': [form.item.data.title()]}}]}
             )
         )
         if not existing_item:
@@ -253,9 +268,11 @@ def search():
         if formBrowse.browse_loc.data == '':
             loc = 'Fairfax, VA'
         return redirect(url_for('browse', lat=parse.quote(formBrowse.browse_lat.data),
-                                long=parse.quote(formBrowse.browse_long.data), radius=parse.quote(formBrowse.browse_radius.data),
+                                long=parse.quote(formBrowse.browse_long.data),
+                                radius=parse.quote(formBrowse.browse_radius.data),
                                 loc=parse.quote(loc)))
-    return render_template('search.html', formPlace=formPlace, formItem=formItem, formBrowse=formBrowse, place=place, items=items,
+    return render_template('search.html', formPlace=formPlace, formItem=formItem, formBrowse=formBrowse, place=place,
+                           items=items,
                            title="Search")
 
 
@@ -295,7 +312,7 @@ def search_item(item, lat, long, zip, radius):
         labels = itemterm['item_label']
         itemid = itemterm['item_id']
         if item in labels and item not in itemid:
-            term= item+' '+itemterm['item_id']
+            term = item + ' ' + itemterm['item_id']
 
     try:
         pipeline = [
@@ -395,7 +412,7 @@ def browse(lat, long, loc, radius):
     pipeline = [
         {'$sort': {'timestamp': -1}},
         {'$group':
-             {'_id': {'place_id':'$place_id', 'item':'$item'},
+             {'_id': {'place_id': '$place_id', 'item': '$item'},
               'latest': {'$first': '$timestamp'},
               'quantity': {'$first': '$quantity'},
               'business': {'$first': '$business'},
@@ -524,7 +541,7 @@ def browsestore(lat, long, loc, radius):
             output.append(store)
 
     results = output
-    results.sort(key= lambda x: int(x['distance']))
+    results.sort(key=lambda x: int(x['distance']))
 
     return render_template('browsestore.html', results=results, lat=lat, long=long, radius=radius,
                            loc=loc, title="All Updates Near You")
@@ -533,3 +550,62 @@ def browsestore(lat, long, loc, radius):
 @app.route('/about')
 def about():
     return render_template('about.html', title="About")
+
+
+@app.route('/history/<item>/<place_id>/<business>/<address>')
+def itemhist(item, place_id, business, address):
+    results = mongo.db.entries.find({'item': item, 'place_id': place_id}).sort('timestamp', -1).limit(10)
+
+    day_pipeline = [
+        {'$match': {'place_id': place_id, 'item': item}},
+        {'$group':
+             {'_id': {'$dayOfWeek': {'date': {'$toDate': {'$multiply': ['$timestamp', 1000]}},
+                                     'timezone': 'America/New_York'}},
+              'stocked': {
+                  '$sum': {'$cond': [
+                      {'$in': ['$quantity', ['limited', 'stocked']]},
+                      1,
+                      0
+                  ]}
+              },
+              'out': {
+                  '$sum': {'$cond': [
+                      {'$eq': ['$quantity', 'out']},
+                      1,
+                      0
+                  ]}
+              }
+              }
+         }
+    ]
+
+    day_results = mongo.db.entries.aggregate(day_pipeline)
+
+    hour_pipeline = [
+        {'$match': {'place_id': place_id, 'item': item}},
+        {'$group':
+             {'_id': {
+                 '$hour': {'date': {'$toDate': {'$multiply': ['$timestamp', 1000]}}, 'timezone': 'America/New_York'}},
+              'stocked': {
+                  '$sum': {'$cond': [
+                      {'$in': ['$quantity', ['limited', 'stocked']]},
+                      1,
+                      0
+                  ]}
+              },
+              'out': {
+                  '$sum': {'$cond': [
+                      {'$eq': ['$quantity', 'out']},
+                      1,
+                      0
+                  ]}
+              }
+              }
+         }
+    ]
+
+    hour_results = mongo.db.entries.aggregate(hour_pipeline)
+
+    return render_template('itemhistory.html', title="Item History", item=parse.unquote(item),
+                           business=parse.unquote(business), address=parse.unquote(address), results=results,
+                           day_results=day_results, hour_results=hour_results)

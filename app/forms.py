@@ -37,12 +37,13 @@ class SearchBusinessForm(FlaskForm):
     address = HiddenField('Address', validators=[DataRequired()])
     submit = SubmitField('Search Store')
 
+
 class BrowseItemsForm(FlaskForm):
     browse_loc = StringField('Near', validators=[Optional()])
     browse_radius = SelectField('Radius',
-                         choices=[('25', '25 miles'), ('50', '50 miles'), ('75', '75 miles'), ('100', '100 miles')],
-                         default='25', validators=[DataRequired()])
+                                choices=[('25', '25 miles'), ('50', '50 miles'), ('75', '75 miles'),
+                                         ('100', '100 miles')],
+                                default='25', validators=[DataRequired()])
     browse_lat = HiddenField('Lat', validators=[Optional()])
     browse_long = HiddenField('Long', validators=[Optional()])
     submit = SubmitField('Browse Items')
-

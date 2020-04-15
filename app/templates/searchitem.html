@@ -2,8 +2,7 @@
 
 {% block content %}
 <div class="clearfix">
-    <p class="mb-0">Showing closest matches for<span class="small"><a href="javascript:history.back()" class="btn btn-primary float-right">Back</a></span></p>
-    <h4>{{curritem | title}}</h4>
+    <h4>{{curritem | title}} <a href="javascript:history.back()" class="btn btn-primary float-right">Back</a></span></h4>
     <p>Within {{ radius }} miles of {{ zip }}</p>
     <hr>
 </div>
@@ -16,7 +15,7 @@
     {% for result in results %}
     <li class="list-group-item">
         <div class="row">
-            <div class="col-xs-6">
+            <div class="col-2 col-sm-1">
                 {% if result.quantity=='limited' %}
                 {% set qty = 'Limited Stock' %}
                 <span style="color:tomato"><i class="fas fa-exclamation-circle fa-2x"></i></span>
@@ -37,7 +36,12 @@
                 {% if result.comment %}
                 <p class="text-muted"><em>"{{result.comment}}"</em></p>
                 {% endif %}
-                <p><a href="{{ url_for('search_place', place_id=result._id['place_id'], business=result.business, address=result.address) }}">View other items at this store</a></p>
+            </div>
+            <div class="col-12 col-sm-2">
+                <nav class="nav justify-content-center">
+                    <a class="nav-link small" href="{{ url_for('itemhist', item=result._id['item'], place_id=result._id['place_id'], business=result.business, address=result.address) }}"><i class="fas fa-history"></i> Item History</a>
+                    <a class="nav-link small" href="{{ url_for('search_place', place_id=result._id['place_id'], business=result.business, address=result.address) }}"><i class="fas fa-dolly"></i> Other Items</a>
+                </nav>
             </div>
         </div>
     </li>
