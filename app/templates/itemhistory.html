@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="clearfix">
+    <h4>{{item}}<a href="javascript:history.back()" class="btn btn-primary float-right">Back</a></h4>
+    <p><strong>{{business}}</strong> | {{address}}</p>
+    <p>Inventory history is based on updates added by users.</p>
+    <hr>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="card-title pb-3">In Stock vs. Out of Stock by Day of Week</div>
+        <div id="day_div"></div>
+        <div class="card-text text-center pt-3">
+            <p class="small"><span class="px-3"><i class="fas fa-square"
+                                                   style="color:rgb(66, 133, 244)"></i> In Stock</span><i
+                    class="fas fa-square" style="color:rgb(219, 68, 55)"></i> Out of Stock</p>
+        </div>
+    </div>
+</div>
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="card-title pb-3">In Stock vs Out of Stock by Hour of Day</div>
+        <div id="hour_div"></div>
+        <div class="card-text text-center pt-3">
+            <p class="small"><span class="px-3"><i class="fas fa-square"
+                                                   style="color:rgb(66, 133, 244)"></i> In Stock</span><i
+                    class="fas fa-square" style="color:rgb(219, 68, 55)"></i> Out of Stock</p>
+        </div>
+    </div>
+</div>
+<h5 class="pt-5">Last 10 updates for this item at this location:</h5>
+<ul class="list-group list-group-flush">
+    {% for result in results %}
+    <li class="list-group-item">
+        <div class="row">
+            <div class="col-xs-6">
+                {% if result.quantity=='limited' %}
+                {% set qty = 'Limited Stock' %}
+                <span style="color:tomato"><i class="fas fa-exclamation-circle fa-1x"></i></span>
+                {% elif result.quantity=='stocked' %}
+                {% set qty = 'Stocked' %}
+                <span style="color:mediumseagreen"><i class="fas fa-thumbs-up fa-1x"></i></span>
+                {% else %}
+                {% set qty = 'Out of Stock' %}
+                <span style="color:crimson"><i class="fas fa-ban fa-1x"></i></span>
+                {% endif %}
+            </div>
+            <div class="col">
+                <p>{{qty}} <span class="small text-muted">({{result.timestamp | format_ts}})</span></p>
+                {% if result.comment %}
+                <p class="text-muted"><em>"{{result.comment}}"</em></p>
+                {% endif %}
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
+
+{% block js %}
+<!--Load the AJAX API-->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+
+  // Load the Visualization API and the corechart package.
+  google.charts.load('current', {'packages':['bar']});
+
+  // Set a callback to run when the Google Visualization API is loaded.
+  google.charts.setOnLoadCallback(drawDayChart);
+  google.charts.setOnLoadCallback(drawHourChart);
+
+  // Callback that creates and populates a data table,
+  // instantiates the pie chart, passes in the data and
+  // draws it.
+  function drawDayChart() {
+
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Day of Week');
+    data.addColumn('number', 'Stocked');
+    data.addColumn('number', 'Out');
+    data.addRows([
+    ['Sun',0,0],
+    ['Mon',0,0],
+    ['Tue',0,0],
+    ['Wed',0,0],
+    ['Thu',0,0],
+    ['Fri',0,0],
+    ['Sat',0,0],
+    ]);
+
+   {% for day_result in day_results %}
+   {% set day_id = day_result._id - 1 %}
+   data.setCell({{day_id}}, 1, {{day_result.stocked}});
+   data.setCell({{day_id}}, 2, {{day_result.out}});
+   {% endfor %}
+
+    // Set chart options
+    var options = {
+        legend:{position: 'none'}
+    };
+
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.charts.Bar(document.getElementById('day_div'));
+    chart.draw(data, google.charts.Bar.convertOptions(options));
+  }
+
+  function drawHourChart() {
+
+    // Create the data table.
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Hour of Day');
+    data.addColumn('number', 'Stocked');
+    data.addColumn('number', 'Out');
+    data.addRows([
+    ['12am',0,0],
+    ['1am',0,0],
+    ['2am',0,0],
+    ['3am',0,0],
+    ['4am',0,0],
+    ['5am',0,0],
+    ['6am',0,0],
+    ['7am',0,0],
+    ['8am',0,0],
+    ['9am',0,0],
+    ['10am',0,0],
+    ['11am',0,0],
+    ['12pm',0,0],
+    ['1pm',0,0],
+    ['2pm',0,0],
+    ['3pm',0,0],
+    ['4pm',0,0],
+    ['5pm',0,0],
+    ['6pm',0,0],
+    ['7pm',0,0],
+    ['8pm',0,0],
+    ['9pm',0,0],
+    ['10pm',0,0],
+    ['11pm',0,0],
+    ]);
+
+   {% for hour_result in hour_results %}
+   {% set hour_id = hour_result._id %}
+   data.setCell({{hour_id}}, 1, {{hour_result.stocked}});
+   data.setCell({{hour_id}}, 2, {{hour_result.out}});
+   {% endfor %}
+
+    // Set chart options
+    var options = {
+        legend:{position: 'none'}
+    };
+
+    // Instantiate and draw our chart, passing in some options.
+    var chart = new google.charts.Bar(document.getElementById('hour_div'));
+    chart.draw(data, google.charts.Bar.convertOptions(options));
+  }
+
+
+</script>
+{% endblock %}
